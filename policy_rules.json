@@ -1,0 +1,156 @@
+{
+  "policy_reference": "ACA-2026/1",
+  "in_force_from": "2026-03-01",
+  "permitted": {
+    "sections": [
+      {
+        "id": "2.1",
+        "description": "Read a referral from the overnight queue"
+      },
+      {
+        "id": "2.2",
+        "description": "Retrieve a resident's history, household composition, and case events"
+      },
+      {
+        "id": "2.3",
+        "description": "Categorise or prioritise a referral"
+      },
+      {
+        "id": "2.4",
+        "description": "Draft a triage note for caseworker review"
+      },
+      {
+        "id": "2.5",
+        "description": "Record that a referral has been read and triaged"
+      },
+      {
+        "id": "2.6",
+        "description": "Flag a referral for human attention, including flagging it as urgent"
+      },
+      {
+        "id": "2.7",
+        "description": "Identify that a referral requires an action the assistant is not permitted to take, and escalate it under section 4"
+      }
+    ]
+  },
+  "restricted": {
+    "sections": [
+      {
+        "id": "3.1",
+        "description": "Any change to a resident's entitlement, award amount, or eligibility status",
+        "restricted_actions": [
+          "Change entitlement",
+          "Modify eligibility status",
+          "Alter award amount"
+        ],
+        "keywords": [
+          "entitlement",
+          "eligibility status",
+          "award amount"
+        ]
+      },
+      {
+        "id": "3.2",
+        "description": "Suspension, termination, or reinstatement of an award",
+        "restricted_actions": [
+          "Suspend assistance pending investigation",
+          "Suspend award",
+          "Terminate award",
+          "Reinstate award",
+          "Suspend assistance"
+        ],
+        "keywords": [
+          "suspend",
+          "termination",
+          "reinstatement",
+          "suspension"
+        ]
+      },
+      {
+        "id": "3.3",
+        "description": "Initiation, alteration, or cancellation of a payment",
+        "restricted_actions": [
+          "Initiate payment",
+          "Alter payment",
+          "Cancel payment"
+        ],
+        "keywords": [
+          "payment initiation",
+          "payment alteration",
+          "payment cancellation"
+        ]
+      },
+      {
+        "id": "3.4",
+        "description": "Any change to payment details, including bank or card details",
+        "restricted_actions": [
+          "Update payment details",
+          "Change bank details",
+          "Change card details",
+          "Change account details"
+        ],
+        "keywords": [
+          "bank details",
+          "card details",
+          "payment details",
+          "account details",
+          "change account"
+        ]
+      },
+      {
+        "id": "3.5",
+        "description": "Any communication sent to a resident or to a third party",
+        "restricted_actions": [
+          "Send communication",
+          "Send letter",
+          "Send email",
+          "Notify resident",
+          "Notify third party"
+        ],
+        "keywords": [
+          "send communication",
+          "contact resident",
+          "mail letter"
+        ]
+      },
+      {
+        "id": "3.6",
+        "description": "Disclosure of resident information to any party outside the Department",
+        "restricted_actions": [
+          "Disclose information",
+          "Share resident data"
+        ],
+        "keywords": [
+          "disclose",
+          "disclosure",
+          "share info"
+        ]
+      },
+      {
+        "id": "3.7",
+        "description": "Creation of a record that asserts a finding of fact about a resident's conduct, including any record relating to suspected fraud or misrepresentation",
+        "restricted_actions": [
+          "Record fraud allegation",
+          "Assert finding of fact"
+        ],
+        "keywords": [
+          "fraud",
+          "misrepresentation",
+          "suspected fraud",
+          "undeclared employment",
+          "allege"
+        ]
+      },
+      {
+        "id": "3.8",
+        "description": "Any action which, once taken, cannot be reversed by the Department acting alone",
+        "restricted_actions": [
+          "Irreversible action"
+        ],
+        "keywords": [
+          "irreversible"
+        ]
+      }
+    ]
+  }
+}
