@@ -1,0 +1,542 @@
+[
+  {
+    "timestamp": "2026-08-23T08:00:11.548661",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0412"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.356744",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0412",
+      "resident_ref": "R-20500"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.357843",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0412",
+      "requested_action": "Review award"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.358690",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0412",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.1 / 6.1"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.359699",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0412",
+      "reason": "Could result in a change to entitlement/award amount. Unclear if review implies change, so treated as restricted."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.360681",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0412"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.361334",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0413"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.935298",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0413",
+      "resident_ref": "R-20507"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.936647",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0413",
+      "requested_action": "Record change of address"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.937651",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0413",
+      "decision": "PERMITTED",
+      "section": "N/A"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.938771",
+    "event": "Triage Note Drafted",
+    "details": {
+      "referral_id": "RF-2026-0413"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:12.939450",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0414"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:13.402790",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0414",
+      "resident_ref": "R-20514"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:13.403993",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0414",
+      "requested_action": "Review award"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:13.404915",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0414",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.1 / 6.1"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:13.405845",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0414",
+      "reason": "Could result in a change to entitlement/award amount. Unclear if review implies change, so treated as restricted."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:13.407070",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0414"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:13.407975",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0415"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.159906",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0415",
+      "resident_ref": "R-20521"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.161856",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0415",
+      "requested_action": "Suspend assistance pending investigation"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.163665",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0415",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.2 / 3.7"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.165412",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0415",
+      "reason": "Explicitly involves suspension (3.2) and relates to suspected fraud (3.7)."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.167938",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0415"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.169487",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0416"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.951608",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0416",
+      "resident_ref": "R-20528"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.953019",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0416",
+      "requested_action": "Review household composition"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.954595",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0416",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.1 / 6.1"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.956068",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0416",
+      "reason": "Changing household composition alters entitlement. Treated as restricted."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.958036",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0416"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:14.959181",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0417"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:15.709070",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0417",
+      "resident_ref": "R-20535"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:15.710261",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0417",
+      "requested_action": "Draft explanatory note"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:15.711505",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0417",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.5 / 6.1"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:15.712889",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0417",
+      "reason": "An explanatory note is a communication sent to a resident."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:15.715100",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0417"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:15.716445",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0418"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:16.286728",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0418",
+      "resident_ref": "R-20542"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:16.288255",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0418",
+      "requested_action": "Review award"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:16.290072",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0418",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.1 / 6.1"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:16.291379",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0418",
+      "reason": "Could result in a change to entitlement/award amount. Unclear if review implies change, so treated as restricted."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:16.293679",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0418"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:16.295084",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0419"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.147619",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0419",
+      "resident_ref": "R-20549"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.149882",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0419",
+      "requested_action": "Record income change"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.152113",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0419",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.1"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.153883",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0419",
+      "reason": "An income change directly alters the resident's entitlement/award amount."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.156511",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0419"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.157861",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0420"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.720066",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0420",
+      "resident_ref": "R-20556"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.722147",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0420",
+      "requested_action": "Flag for contact attempt"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.723937",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0420",
+      "decision": "PERMITTED",
+      "section": "Section 2.6"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.726080",
+    "event": "Triage Note Drafted",
+    "details": {
+      "referral_id": "RF-2026-0420"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:17.727675",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0421"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:18.455081",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0421",
+      "resident_ref": "R-20563"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:18.456721",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0421",
+      "requested_action": "Review household composition"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:18.458122",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0421",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.1 / 6.1"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:18.459781",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0421",
+      "reason": "Changing household composition alters entitlement. Treated as restricted."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:18.462207",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0421"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:18.463983",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0422"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.074119",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0422",
+      "resident_ref": "R-20570"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.075911",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0422",
+      "requested_action": "Draft triage note for supervisor"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.078074",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0422",
+      "decision": "PERMITTED",
+      "section": "Section 2.4"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.080920",
+    "event": "Triage Note Drafted",
+    "details": {
+      "referral_id": "RF-2026-0422"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.083532",
+    "event": "Referral Loaded",
+    "details": {
+      "referral_id": "RF-2026-0423"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.764889",
+    "event": "Resident History Retrieved",
+    "details": {
+      "referral_id": "RF-2026-0423",
+      "resident_ref": "R-20577"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.767519",
+    "event": "Requested Action Analysed",
+    "details": {
+      "referral_id": "RF-2026-0423",
+      "requested_action": "Update payment details"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.770180",
+    "event": "Policy Section Checked",
+    "details": {
+      "referral_id": "RF-2026-0423",
+      "decision": "REQUIRES_APPROVAL",
+      "section": "Section 3.4"
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.771859",
+    "event": "Action Blocked",
+    "details": {
+      "referral_id": "RF-2026-0423",
+      "reason": "Explicitly restricts any change to payment details."
+    }
+  },
+  {
+    "timestamp": "2026-08-23T08:00:19.774000",
+    "event": "Escalation Created",
+    "details": {
+      "referral_id": "RF-2026-0423"
+    }
+  }
+]

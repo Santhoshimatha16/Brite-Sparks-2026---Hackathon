@@ -8,10 +8,9 @@ The agent features a deterministic, structured policy guardrail and a hard appro
 
 ## 1. Setup & Installation
 
-The project uses the **Python 3 standard library only**, meaning no external dependencies (like `pip` packages) are required to run the agent.
-
 ### Prerequisites
-*   Python 3.10+ (tested with Python 3.14.0)
+*   Python 3.10+
+*   Dependencies: `pip install requests`
 
 ### Step 1: Start the Resident History mock API
 The agent retrieves resident information from the mock API. Run the following command in a separate terminal window to start the service:
@@ -27,32 +26,27 @@ Verify that the service is running by visiting:
 
 ## 2. Running the Agent
 
-You can run the agent in two modes depending on your environment.
-
-### Mode A: Interactive Mode (Default)
-In interactive mode, when the agent detects a restricted action (e.g. updating bank details or suspending assistance), it halts and prompts the supervisor for approval via CLI:
+To execute the morning batch process:
 
 ```bash
-python agent.py
+python main.py
 ```
 
-*When prompted, type `y` to approve the action, or press Enter/type `n` to reject and escalate.*
-
-### Mode B: Non-Interactive Mode
-In non-interactive mode, or if the terminal does not support interactive inputs, the agent will **automatically decline and escalate** all restricted actions. This is suitable for headless execution or automated test suites:
-
-```bash
-python agent.py --non-interactive
-```
+### How the Hard Approval Gate Works
+During the run, the agent processes all 12 referrals sequentially. 
+For each referral, its `requested_action` is evaluated against the `PolicyEngine`. 
+If the action is marked as `REQUIRES_APPROVAL` (either because it falls strictly under Section 3, or because it is ambiguous and defaults to restricted under Section 6.1), the `ActionExecutor` physically throws an `ApprovalRequiredException`.
+This structural block prevents the execution pathway from ever completing the action. The batch runner catches this exception, creates a formatted escalation document for the supervisor, and seamlessly continues processing the next referral in the queue.
 
 ---
 
-## 3. Policy as Data
+## 3. Testing the Agent
+When you run `python main.py`, verify the following expected behavior based on the required test cases:
 
-All policy boundaries and restrictions are defined in [policy_rules.json](policy_rules.json). 
-*   **Permitted Actions**: Logged and triaged directly.
-*   **Restricted Actions (Section 3)**: Triggers the human approval gate. The mapping detects restricted actions based on exact action matches and custom keywords (e.g. `suspend`, `bank details`, `fraud`).
-*   To update or add new rules (e.g., for Day Two changes), simply modify `policy_rules.json` without modifying the core program code.
+- **Test 1:** Normal referrals (e.g., *Flag for contact attempt*, *Record change of address*) successfully result in a drafted triage note in `output/triage_RF-*.md`.
+- **Test 2:** Restricted referrals (e.g., *Update payment details*, *Suspend assistance*) are instantly blocked by the policy engine and `ApprovalRequiredException`.
+- **Test 3 & 5 (Continuation):** The agent does not crash on escalations or history API failures; it gracefully continues until all 12 referrals have been processed.
+- **Test 4:** Ambiguous referrals (e.g., *Review award*, *Review household composition*) are aggressively treated as restricted per **Section 6.1** and escalated.
 
 ---
 
@@ -60,8 +54,7 @@ All policy boundaries and restrictions are defined in [policy_rules.json](policy
 
 All run execution results and traces are stored in the `output/` directory:
 
-*   **Triage Notes**: Normal triage proposals are saved as `output/triage_RF-XXXX-XXXX.md`.
-*   **Escalation Reports**: Refused or escalated referrals are saved as `output/escalation_RF-XXXX-XXXX.md`, listing the policy section breached and context for the supervisor.
+*   **Triage Notes**: Permitted triage proposals are saved as `output/triage_RF-XXXX-XXXX.md`.
+*   **Escalation Reports**: Refused or escalated referrals are saved as `output/escalation_RF-XXXX-XXXX.txt`, listing the policy section breached, the reason, and context for the supervisor.
 *   **Execution Trace (Section 5 compliance)**:
-    *   [output/execution_trace.json](output/execution_trace.json): Full machine-readable audit timeline of every step taken.
-    *   [output/execution_trace.md](output/execution_trace.md): A clean, human-readable markdown table representing the run timeline.
+    *   [execution_trace.json](execution_trace.json): A full machine-readable audit timeline of every step taken (referral loaded, history fetched, policy checked, action drafted/blocked, escalation created) proving exactly what the agent did and what it declined.

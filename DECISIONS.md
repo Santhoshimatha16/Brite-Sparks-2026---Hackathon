@@ -6,25 +6,21 @@ This document details the architectural design choices, why they were made, and 
 
 The agent is **structurally incapable** of executing or preparing any restricted action (falling under Section 3 of the policy) on its own. We know this because:
 
-*   **Bypassing the LLM for Guardrails**: The decision to flag a referral as restricted is not delegated to LLM prompts, which are prone to hallucinations, prompt injections, and compliance failures. Instead, the check is performed by **deterministic Python code** mapping the referral against structured rules in `policy_rules.json`. If a match occurs, the program triggers an immediate block or escalation.
-*   **Hardcoded Approval Block**: When a restricted action is detected, the Python code execution literally halts at a blocking CLI prompt (`input()`). There is no code path that bypasses this check and registers approval.
-*   **Safe Defaults (Non-Interactive Runs)**: In environments where an interactive shell is not present (e.g. automated test pipelines, daemon workers), the agent detects that `sys.stdin.isatty() == False` or that `--non-interactive` was supplied, and **automatically declines/escalates the referral**. It is impossible for a restricted action to proceed with approval unless a human explicitly types `y`/`yes` in an interactive shell.
-*   **Read-Only API Integration**: The mock Resident History API does not expose any database write/mutation endpoints. The agent has no code capability to write changes back to the database, ensuring zero possibility of unauthorized state changes in Calder County's registry.
+*   **Hard Approval Gate in the Executor:** The code architecture strictly separates decision logic (`PolicyEngine`) from execution logic (`ActionExecutor`). Before any action is taken, the `ActionExecutor` queries the `PolicyEngine`. If the decision is `REQUIRES_APPROVAL`, the executor raises an `ApprovalRequiredException`. The execution pathway for the action is completely severed; there is no code path that allows the action to proceed.
+*   **No "Suggestive" Blocks:** We do not rely on an LLM prompt telling the AI "please ask for approval". The block is hard-coded in Python at the method level.
+*   **Enforcing Section 6.1:** Any action not explicitly known or understood by the `PolicyEngine` defaults to `REQUIRES_APPROVAL`. The system uses an explicit allow-list for permitted actions, aggressively escalating unclear actions.
+*   **Morning Batch Safety:** Because the morning batch runs unattended, the system cannot prompt for a human decision inline. Therefore, the raised `ApprovalRequiredException` is caught by the batch runner to instantly escalate the case and continue processing the rest of the queue, adhering strictly to Section 4.1 (do not perform partial action) and Section 4.3 (continue processing others).
 
-## 2. Policy as Data (Day Two Readiness)
+## 2. Policy as the Source of Truth
 
-Rather than hardcoding the policy rules directly into Python logic, we defined the policy in `policy_rules.json`.
-*   **Rationale**: On "Day Two", if the department updates Policy ACA-2026/1 (e.g., adding a new restricted action or allowing a previously restricted action), we only need to update the JSON schema, not rebuild or modify the core logic of `agent.py`.
-*   **Mechanism**: The `agent.py` script reads the JSON at startup and iterates over the restricted patterns to validate referrals dynamically.
+Rather than hard-coding checks like `if action == 'change_bank': approval` throughout the agent's logic, all rules are encapsulated in `policy_engine.py`.
+*   **Rationale:** On "Day Two", if the department updates Policy ACA-2026/1, the only file that requires changes is the `PolicyEngine` configuration. The executor and main agent logic remain untouched.
 
-## 3. Technology Stack & Fallbacks
+## 3. Resilience and Traceability
 
-*   **Stack**: Pure Python 3 standard library.
-    *   No external libraries (like `requests` or `spacy`) are required, ensuring zero setup latency and making it trivial to run on any clean machine out-of-the-box.
-*   **Dual LLM/Template Engine**:
-    *   If a Gemini or OpenAI API key is supplied via environment variables (`GEMINI_API_KEY` or `OPENAI_API_KEY`), the agent calls the model to draft highly descriptive, context-aware triage/escalation notes.
-    *   If no key is present, the agent automatically falls back to an offline template-based generator. This prevents the script from crashing or failing in test environments without API access.
+*   **Partial Failure Handling:** The agent processes referrals sequentially in a `try/except` block. If the History API fails or an action is escalated, the error is logged, and the loop naturally continues to the next referral.
+*   **Immutable Tracing:** Every state transition (referral loaded, history fetched, policy checked, action taken/blocked) is appended to an in-memory list and dumped to `execution_trace.json`. This satisfies Section 5.1, allowing a supervisor to perfectly reconstruct the agent's logic.
 
-## 4. What Was Cut for Time
+## 4. Frontend Excluded for Core Focus
 
-*   **Advanced Semantic Keyword Parsing**: We used simple, robust string matching for keyword detection. In a production version, we would implement full semantic checking or regex-based pattern matching for the policy data to handle synonyms (e.g. "cancel" vs "terminate") more elegantly.
+As interface quality was not assessed and a full frontend was not strictly required, development time was focused entirely on building the un-bypassable Hard Approval Gate and comprehensive traceability mechanisms.
