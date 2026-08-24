@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": "2026-08-24T08:10:10.216973",
+    "timestamp": "2026-08-24T08:23:06.007908",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0412",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.328882",
+    "timestamp": "2026-08-24T08:23:06.148516",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0412",
@@ -17,7 +17,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.336205",
+    "timestamp": "2026-08-24T08:23:06.154960",
     "event": "Safeguarding Hand-Off (Section 3.9)",
     "details": {
       "referral_id": "RF-2026-0412",
@@ -33,7 +33,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.338198",
+    "timestamp": "2026-08-24T08:23:06.156721",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0413",
@@ -41,7 +41,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.449479",
+    "timestamp": "2026-08-24T08:23:06.353106",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0413",
@@ -50,14 +50,14 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.451654",
+    "timestamp": "2026-08-24T08:23:06.353856",
     "event": "Triage Note Drafted (Section 2.4)",
     "details": {
       "referral_id": "RF-2026-0413"
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.452575",
+    "timestamp": "2026-08-24T08:23:06.354118",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0414",
@@ -65,7 +65,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.585015",
+    "timestamp": "2026-08-24T08:23:06.642668",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0414",
@@ -74,7 +74,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.586049",
+    "timestamp": "2026-08-24T08:23:06.643905",
     "event": "Action Blocked & Escalated (Section 4)",
     "details": {
       "referral_id": "RF-2026-0414",
@@ -83,7 +83,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.587988",
+    "timestamp": "2026-08-24T08:23:06.646355",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0415",
@@ -91,7 +91,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.832797",
+    "timestamp": "2026-08-24T08:23:06.833766",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0415",
@@ -100,7 +100,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.834179",
+    "timestamp": "2026-08-24T08:23:06.834868",
     "event": "Action Blocked & Escalated (Section 4)",
     "details": {
       "referral_id": "RF-2026-0415",
@@ -109,7 +109,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:10.836132",
+    "timestamp": "2026-08-24T08:23:06.836306",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0416",
@@ -117,7 +117,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.085351",
+    "timestamp": "2026-08-24T08:23:07.125476",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0416",
@@ -126,7 +126,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.086688",
+    "timestamp": "2026-08-24T08:23:07.126695",
     "event": "Safeguarding Hand-Off (Section 3.9)",
     "details": {
       "referral_id": "RF-2026-0416",
@@ -142,7 +142,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.090426",
+    "timestamp": "2026-08-24T08:23:07.129306",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0417",
@@ -150,7 +150,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.243419",
+    "timestamp": "2026-08-24T08:23:07.318741",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0417",
@@ -159,7 +159,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.245008",
+    "timestamp": "2026-08-24T08:23:07.320244",
     "event": "Action Blocked & Escalated (Section 4)",
     "details": {
       "referral_id": "RF-2026-0417",
@@ -168,7 +168,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.247441",
+    "timestamp": "2026-08-24T08:23:07.322734",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0418",
@@ -176,7 +176,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.509016",
+    "timestamp": "2026-08-24T08:23:07.497615",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0418",
@@ -185,7 +185,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.510326",
+    "timestamp": "2026-08-24T08:23:07.499520",
     "event": "Safeguarding Hand-Off (Section 3.9)",
     "details": {
       "referral_id": "RF-2026-0418",
@@ -207,7 +207,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.512793",
+    "timestamp": "2026-08-24T08:23:07.502339",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0419",
@@ -215,7 +215,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.681275",
+    "timestamp": "2026-08-24T08:23:07.744408",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0419",
@@ -224,7 +224,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.682936",
+    "timestamp": "2026-08-24T08:23:07.747058",
     "event": "Action Blocked & Escalated (Section 4)",
     "details": {
       "referral_id": "RF-2026-0419",
@@ -233,7 +233,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.685423",
+    "timestamp": "2026-08-24T08:23:07.750339",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0420",
@@ -241,7 +241,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.844103",
+    "timestamp": "2026-08-24T08:23:08.088895",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0420",
@@ -250,14 +250,14 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.846774",
+    "timestamp": "2026-08-24T08:23:08.091265",
     "event": "Triage Note Drafted (Section 2.4)",
     "details": {
       "referral_id": "RF-2026-0420"
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:11.848425",
+    "timestamp": "2026-08-24T08:23:08.092453",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0421",
@@ -265,7 +265,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.203954",
+    "timestamp": "2026-08-24T08:23:08.258886",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0421",
@@ -274,7 +274,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.205742",
+    "timestamp": "2026-08-24T08:23:08.261335",
     "event": "Action Blocked & Escalated (Section 4)",
     "details": {
       "referral_id": "RF-2026-0421",
@@ -283,7 +283,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.208211",
+    "timestamp": "2026-08-24T08:23:08.263959",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0422",
@@ -291,7 +291,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.554948",
+    "timestamp": "2026-08-24T08:23:08.474829",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0422",
@@ -300,14 +300,14 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.558367",
+    "timestamp": "2026-08-24T08:23:08.478099",
     "event": "Triage Note Drafted (Section 2.4)",
     "details": {
       "referral_id": "RF-2026-0422"
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.560263",
+    "timestamp": "2026-08-24T08:23:08.479863",
     "event": "Referral Loaded",
     "details": {
       "referral_id": "RF-2026-0423",
@@ -315,7 +315,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.745334",
+    "timestamp": "2026-08-24T08:23:08.833885",
     "event": "Resident History Retrieved",
     "details": {
       "referral_id": "RF-2026-0423",
@@ -324,7 +324,7 @@
     }
   },
   {
-    "timestamp": "2026-08-24T08:10:12.747301",
+    "timestamp": "2026-08-24T08:23:08.835609",
     "event": "Action Blocked & Escalated (Section 4)",
     "details": {
       "referral_id": "RF-2026-0423",
