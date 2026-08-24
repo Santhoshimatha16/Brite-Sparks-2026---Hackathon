@@ -1,16 +1,18 @@
-# Referral Mapping against Authority Policy
+# Referral Mapping Against Authority Policy (ACA-2026/1 & ACA-2026/2)
 
-| Referral ID | Requested Action | Authority Policy Mapping | Decision |
-|---|---|---|---|
-| **RF-2026-0412** | Review award | **Section 3.1 / 6.1:** A review could result in a change to entitlement or award amount. Since it's unclear if "review" implies taking the action to change it, 6.1 mandates treating it as restricted. | `REQUIRES_APPROVAL` |
-| **RF-2026-0413** | Record change of address | **Permitted:** Recording an address change does not fall under Section 3 (no change to payment details or entitlement explicitly mentioned). | `PERMITTED` |
-| **RF-2026-0414** | Review award | **Section 3.1 / 6.1:** Same as 0412. | `REQUIRES_APPROVAL` |
-| **RF-2026-0415** | Suspend assistance pending investigation | **Section 3.2 / 3.7:** Explicitly involves suspension (3.2) and relates to suspected fraud (3.7). | `REQUIRES_APPROVAL` |
-| **RF-2026-0416** | Review household composition | **Section 3.1 / 6.1:** Changing household composition typically alters entitlement. By 6.1, treated as restricted. | `REQUIRES_APPROVAL` |
-| **RF-2026-0417** | Draft explanatory note | **Section 3.5 / 6.1:** An explanatory note is a communication sent to a resident (3.5). | `REQUIRES_APPROVAL` |
-| **RF-2026-0418** | Review award | **Section 3.1 / 6.1:** Same as 0412. | `REQUIRES_APPROVAL` |
-| **RF-2026-0419** | Record income change | **Section 3.1:** An income change directly alters the resident's entitlement/award amount. | `REQUIRES_APPROVAL` |
-| **RF-2026-0420** | Flag for contact attempt | **Section 2.6:** Explicitly permitted to flag a referral for human attention. | `PERMITTED` |
-| **RF-2026-0421** | Review household composition | **Section 3.1 / 6.1:** Same as 0416. | `REQUIRES_APPROVAL` |
-| **RF-2026-0422** | Draft triage note for supervisor | **Section 2.4:** Explicitly permitted to draft a triage note for caseworker review. | `PERMITTED` |
-| **RF-2026-0423** | Update payment details | **Section 3.4:** Explicitly restricts any change to payment details, including bank accounts. | `REQUIRES_APPROVAL` |
+This table documents the complete policy evaluation for all 12 overnight referrals, incorporating the safeguarding requirements of **Amendment ACA-2026/2** (§3.9).
+
+| Referral ID | Resident Ref | Requested Action | Household Analysis (§3.9) | Policy Mapping | Final Decision & Output |
+|---|---|---|---|---|---|
+| **RF-2026-0412** | R-20500 | Review award | **Minor Present:** William Iverson (DOB: 2021-02-26, Age 5) | **Section 3.9 (Safeguarding):** Prohibits automated triage note for household with minor. | `CASEWORKER_HANDOFF`<br>`output/handoff_RF-2026-0412.md` |
+| **RF-2026-0413** | R-20507 | Record change of address | **All Adults:** Susan (1971), Sarah (2002), Rosa (2000) | **Permitted:** Recording address change is permitted under Section 2.2/2.5. | `PERMITTED`<br>`output/triage_RF-2026-0413.md` |
+| **RF-2026-0414** | R-20514 | Review award | **All Adults:** Tomas (1980) | **Section 3.1 / 6.1:** Reviewing award affects entitlement; restricted under Section 3.1. | `REQUIRES_APPROVAL` (Escalation)<br>`output/escalation_RF-2026-0414.txt` |
+| **RF-2026-0415** | R-20521 | Suspend assistance pending investigation | **All Adults:** Jessica (1993), Maria (1991), Michael (1987), Maria Z. (1961) | **Section 3.2 & 3.7:** Explicitly involves suspension of award and fraud allegation. | `REQUIRES_APPROVAL` (Escalation)<br>`output/escalation_RF-2026-0415.txt` |
+| **RF-2026-0416** | R-20528 | Review household composition | **Minor Present:** Maria Carver (DOB: 2022-04-20, Age 3) | **Section 3.9 (Safeguarding):** Prohibits automated triage note for household with minor. | `CASEWORKER_HANDOFF`<br>`output/handoff_RF-2026-0416.md` |
+| **RF-2026-0417** | R-20535 | Draft explanatory note | **All Adults:** Sarah (1972) | **Section 3.5 / 6.1:** Explanatory note is a communication sent to a resident. | `REQUIRES_APPROVAL` (Escalation)<br>`output/escalation_RF-2026-0417.txt` |
+| **RF-2026-0418** | R-20542 | Review award | **Minors Present:** Michael Crowley (Age 12), Rosa Vance (Age < 1) | **Section 3.9 (Safeguarding):** Prohibits automated triage note for household with minors. | `CASEWORKER_HANDOFF`<br>`output/handoff_RF-2026-0418.md` |
+| **RF-2026-0419** | R-20549 | Record income change | **All Adults:** Ahmed (1999), Karen (1957), Tomas (1964) | **Section 3.1:** Directly alters resident's entitlement/award calculation. | `REQUIRES_APPROVAL` (Escalation)<br>`output/escalation_RF-2026-0419.txt` |
+| **RF-2026-0420** | R-20556 | Flag for contact attempt | **All Adults:** Daniel (1986), Barbara (2003), Daniel K. (1985), Priya (1970) | **Permitted:** Section 2.6 explicitly permits flagging a referral for human attention. | `PERMITTED`<br>`output/triage_RF-2026-0420.md` |
+| **RF-2026-0421** | R-20563 | Review household composition | **All Adults:** Ahmed (1966), Susan (1970), Robert (1950), Daniel (1993) | **Section 3.1 / 6.1:** Changing household composition alters entitlement calculation. | `REQUIRES_APPROVAL` (Escalation)<br>`output/escalation_RF-2026-0421.txt` |
+| **RF-2026-0422** | R-20570 | Draft triage note for supervisor | **All Adults:** David (1977), Ahmed (2003), Robert (2002), Elizabeth (1992) | **Permitted:** Section 2.4 explicitly permits drafting triage notes for caseworker review. | `PERMITTED`<br>`output/triage_RF-2026-0422.md` |
+| **RF-2026-0423** | R-20577 | Update payment details | **All Adults:** Sarah (1993) | **Section 3.4:** Explicitly restricts any change to payment details / bank accounts. | `REQUIRES_APPROVAL` (Escalation)<br>`output/escalation_RF-2026-0423.txt` |

@@ -1,8 +1,11 @@
 # Calder County Automated Casework Assistant
 
-This is an automated casework morning agent designed for the Calder County Department of Household Services. It automates the caseworker's routine morning sequence end-to-end, fetching overnight referrals, querying resident history from the Resident History API, and drafting triage notes, while strictly enforcing Authority Policy **ACA-2026/1**.
+This is an automated casework morning agent designed for the Calder County Department of Household Services. It automates the caseworker's routine morning sequence end-to-end, fetching overnight referrals, querying resident history from the Resident History API, and drafting triage notes, while strictly enforcing Authority Policy **ACA-2026/1** and Policy Amendment **ACA-2026/2**.
 
-The agent features a deterministic, structured policy guardrail and a hard approval gate for supervisor reviews, ensuring no restricted action can ever proceed without explicit human sign-off.
+The agent features:
+1. **Hard Approval Gate for Section 3 Restrictions:** Prohibits automated execution of restricted actions (e.g. award changes, suspensions, payment alterations, fraud assertions) and generates Section 4 supervisor escalations.
+2. **Safeguarding Gate for Section 3.9 (ACA-2026/2):** Prohibits automated triage note generation for households containing minors under 18 or with unestablished composition, routing them to caseworkers via preserved-context Hand-Offs.
+3. **Immutable Traceability (Section 5.1):** Generates structured execution logs in `output/execution_trace.json` and `output/execution_trace.md`.
 
 ---
 
@@ -26,27 +29,36 @@ Verify that the service is running by visiting:
 
 ## 2. Running the Agent
 
+### Morning Batch Processing
 To execute the morning batch process:
 
 ```bash
 python main.py
 ```
 
-### How the Hard Approval Gate Works
-During the run, the agent processes all 12 referrals sequentially. 
-For each referral, its `requested_action` is evaluated against the `PolicyEngine`. 
-If the action is marked as `REQUIRES_APPROVAL` (either because it falls strictly under Section 3, or because it is ambiguous and defaults to restricted under Section 6.1), the `ActionExecutor` physically throws an `ApprovalRequiredException`.
-This structural block prevents the execution pathway from ever completing the action. The batch runner catches this exception, creates a formatted escalation document for the supervisor, and seamlessly continues processing the next referral in the queue.
+Or run the full CLI agent:
+
+```bash
+python agent.py --non-interactive
+```
 
 ---
 
-## 3. Testing the Agent
-When you run `python main.py`, verify the following expected behavior based on the required test cases:
+## 3. How the Gates Work
 
-- **Test 1:** Normal referrals (e.g., *Flag for contact attempt*, *Record change of address*) successfully result in a drafted triage note in `output/triage_RF-*.md`.
-- **Test 2:** Restricted referrals (e.g., *Update payment details*, *Suspend assistance*) are instantly blocked by the policy engine and `ApprovalRequiredException`.
-- **Test 3 & 5 (Continuation):** The agent does not crash on escalations or history API failures; it gracefully continues until all 12 referrals have been processed.
-- **Test 4:** Ambiguous referrals (e.g., *Review award*, *Review household composition*) are aggressively treated as restricted per **Section 6.1** and escalated.
+### A. Safeguarding Gate (Amendment ACA-2026/2 §3.9)
+Before any triage note is drafted, the agent queries the Department's resident record and calculates the ages of all household members.
+*   If a household includes a person under 18 (or if composition cannot be established per Section 5.2), the system **raises `SafeguardingHandOffException`**.
+*   The agent produces a **Caseworker Hand-Off** (`output/handoff_RF-XXXX.md`). Per Section 3.3, a hand-off is distinct from an escalation: it represents ordinary casework that a person must do.
+*   All gathered context (resident records, award amount, household roster, and case events) is preserved in the hand-off package so caseworkers never repeat work.
+
+### B. Hard Approval Gate (Policy ACA-2026/1 §3.1–§3.8 & §6.1)
+For all non-safeguarding referrals, the requested action is evaluated against `PolicyEngine`.
+*   If the action is restricted or ambiguous (Section 6.1 default), the system **raises `ApprovalRequiredException`**.
+*   The agent produces a formal **Supervisor Escalation** (`output/escalation_RF-XXXX.txt`), requiring a departmental supervisor decision.
+
+### C. Permitted Triage Proposals (§2.4)
+For standard, permitted actions involving adult-only households, the agent produces a **Triage Proposal** (`output/triage_RF-XXXX.md`) ready for caseworker adoption.
 
 ---
 
@@ -54,7 +66,9 @@ When you run `python main.py`, verify the following expected behavior based on t
 
 All run execution results and traces are stored in the `output/` directory:
 
-*   **Triage Notes**: Permitted triage proposals are saved as `output/triage_RF-XXXX-XXXX.md`.
-*   **Escalation Reports**: Refused or escalated referrals are saved as `output/escalation_RF-XXXX-XXXX.txt`, listing the policy section breached, the reason, and context for the supervisor.
+*   **Triage Proposals**: Permitted triage proposals saved as `output/triage_RF-XXXX-XXXX.md`.
+*   **Caseworker Hand-Offs**: Safeguarding hand-offs saved as `output/handoff_RF-XXXX-XXXX.md`.
+*   **Escalation Reports**: Supervisor escalations saved as `output/escalation_RF-XXXX-XXXX.txt` and `.md`.
 *   **Execution Trace (Section 5 compliance)**:
-    *   [execution_trace.json](execution_trace.json): A full machine-readable audit timeline of every step taken (referral loaded, history fetched, policy checked, action drafted/blocked, escalation created) proving exactly what the agent did and what it declined.
+    *   `execution_trace.json`: Full machine-readable audit timeline of every step taken.
+    *   `output/execution_trace.md`: Markdown summary table of all actions and state transitions.

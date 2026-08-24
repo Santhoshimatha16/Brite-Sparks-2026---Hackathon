@@ -1,9 +1,8 @@
 # AI Usage Disclosure
 
-In compliance with the Brite Spark 2026 guidelines, this document outlines how AI tools were utilized during the development of this automated caseworker morning agent:
+In compliance with the Brite Spark 2026 guidelines, this document outlines how AI tools were utilized during the development and adaptation of this automated casework assistant:
 
-*   **Assistant/Developer**: We used Google DeepMind's Antigravity agentic coding assistant to pair-program and build the solution.
-*   **Code Scaffolding**: The AI was used to scaffold the initial structures of `agent.py` and write the JSON schema mapping in `policy_rules.json`.
-*   **Documentation Support**: The AI helped draft sections of `DECISIONS.md`, `README.md`, and this disclosure document.
-*   **Review and Design**: The AI helped analyze Calder County DHS Authority Policy ACA-2026/1 to extract keywords and map the 12 referrals against the respective policy restrictions.
-*   **LLM API Integration**: The agent is designed to dynamically call Google's Gemini API (or OpenAI's API as a fallback) to draft natural language triage and escalation notes when API keys are available in the environment.
+*   **Assistant/Developer**: We used Google DeepMind's Antigravity agentic coding assistant to pair-program, build, and adapt the solution.
+*   **Code Scaffolding & Maintenance**: The AI was used to build the initial architecture, implement `agent/policy_engine.py`, `main.py`, and `agent.py`, and adapt the safeguarding evaluation logic following Policy Amendment ACA-2026/2.
+*   **Documentation Support**: The AI assisted in drafting and updating `DECISIONS.md`, `README.md`, `Amendment ACA-2026-2.md`, `referral_mapping.md`, and this disclosure document.
+*   **Policy Analysis**: The AI helped analyze Calder County DHS Authority Policy ACA-2026/1 and Amendment ACA-2026/2 to systematically map referrals, demographic age calculations, and distinguishing supervisor escalations (§4) from caseworker safeguarding hand-offs (§3.9 / §3.2).

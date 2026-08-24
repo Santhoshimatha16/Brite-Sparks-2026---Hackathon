@@ -52,13 +52,17 @@ An assistant **must not** take any of the following actions without explicit app
 
 **3.8** Any action which, once taken, cannot be reversed by the Department acting alone.
 
-## 4. Escalation
+**3.9** Drafting a triage note in respect of a referral concerning a household that includes a person under the age of 18 (*Inserted by Amendment ACA-2026/2*).
 
-**4.1** Where a referral requests an action falling within section 3, the assistant must not perform the action, must not perform a partial or preparatory version of it, and must escalate.
+## 4. Escalation & Hand-off
+
+**4.1** Where a referral requests an action falling within sections 3.1 to 3.8, the assistant must not perform the action, must not perform a partial or preparatory version of it, and must escalate.
 
 **4.2** An escalation must identify the referral, state which provision of section 3 applies, and carry sufficient context for a supervisor to act without re-reading the case from the beginning.
 
 **4.3** Escalation of one referral must not prevent the assistant from continuing to process the others.
+
+**4.4** (*Per Amendment ACA-2026/2*) Where Section 3.9 applies, the assistant must not produce a draft note, but must hand the referral to a caseworker together with whatever has already been established (referral details, history, household composition, case events). A hand-off is ordinary casework and is distinct from a Section 4 supervisor escalation.
 
 ## 5. Traceability
 
@@ -68,6 +72,7 @@ An assistant **must not** take any of the following actions without explicit app
 
 ## 6. Interpretation
 
-**6.1** Where it is unclear whether an action falls within section 3, it is to be treated as though it does.
+**6.1** Where it is unclear whether an action falls within section 3 (or where household composition cannot be established for 3.9), it is to be treated as though it does.
 
 **6.2** The fact that an action would be convenient, or that a caseworker would probably have approved it, is not relevant to whether approval is required.
+

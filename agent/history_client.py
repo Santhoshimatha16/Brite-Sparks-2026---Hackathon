@@ -12,17 +12,22 @@ class HistoryClient:
     def get_household(self, resident_ref):
         response = requests.get(f"{self.base_url}/residents/{resident_ref}/household")
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        return data.get("household", []) if isinstance(data, dict) else data
 
     def get_events(self, resident_ref):
         response = requests.get(f"{self.base_url}/residents/{resident_ref}/events")
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        return data.get("events", []) if isinstance(data, dict) else data
 
     def get_full_history(self, resident_ref):
-        """Fetches resident, household, and events in one go."""
+        """Fetches full resident record, household, and events."""
+        full_rec = self.get_resident(resident_ref)
+        household = full_rec.get("household", [])
+        events = full_rec.get("events", [])
         return {
-            "resident": self.get_resident(resident_ref),
-            "household": self.get_household(resident_ref),
-            "events": self.get_events(resident_ref)
+            "resident": full_rec,
+            "household": household,
+            "events": events
         }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Calder County — Department of Household Services
-Automated Casework Assistant: Morning Agent (ACA-2026/1 Compliant)
+Automated Casework Assistant: Morning Agent (ACA-2026/1 & ACA-2026/2 Compliant)
 """
 
 import os
@@ -10,7 +10,7 @@ import json
 import time
 import urllib.request
 import urllib.error
-from datetime import datetime
+from datetime import datetime, date
 
 # Setup paths
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +55,7 @@ class AgentTrace:
             f.write("| Step | Timestamp | Action | Description |\n")
             f.write("|---|---|---|---|\n")
             for step in self.trace_log:
-                desc = step["details"].get("summary", "").replace("\n", " ")
+                desc = str(step["details"].get("summary", "")).replace("\n", " ")
                 f.write(f"| {step['step_number']} | {step['timestamp']} | {step['action']} | {desc} |\n")
 
 
@@ -77,27 +77,79 @@ def load_json_file(path):
         return json.load(f)
 
 
+def evaluate_safeguarding(household, received_at=None):
+    """
+    Evaluates household composition under Amendment ACA-2026/2 Section 3.9 & 5.1/5.2.
+    Returns: (applies, minors_list, reason_str)
+    """
+    if received_at:
+        try:
+            ref_date = datetime.fromisoformat(str(received_at).replace("Z", "")).date()
+        except Exception:
+            ref_date = date(2026, 3, 17)
+    else:
+        ref_date = date(2026, 3, 17)
+
+    # Section 5.2: If composition cannot be established, 3.9 applies
+    if household is None or not isinstance(household, list) or len(household) == 0:
+        return True, [], "Household composition could not be established; treated as restricted under Section 5.2 / 6.1"
+
+    minors = []
+    for member in household:
+        dob_str = member.get("date_of_birth")
+        if not dob_str:
+            return True, [{"name": member.get("name", "Unknown")}], f"Member {member.get('name')} missing DOB; treated as applying under Section 5.2"
+        try:
+            dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+            age = ref_date.year - dob.year - ((ref_date.month, ref_date.day) < (dob.month, dob.day))
+            if age < 18:
+                minors.append({
+                    "name": member.get("name"),
+                    "relationship": member.get("relationship"),
+                    "date_of_birth": dob_str,
+                    "age": age
+                })
+        except Exception as e:
+            return True, [{"name": member.get("name", "Unknown")}], f"Could not parse DOB for {member.get('name')}; treated as applying under Section 5.2"
+
+    if len(minors) > 0:
+        m_desc = ", ".join([f"{m['name']} (age {m['age']})" for m in minors])
+        return True, minors, f"Household includes minor under 18: {m_desc}"
+
+    return False, [], "All household members are 18 or older"
+
+
 def evaluate_policy(referral, policy):
     """
-    Structured Guardrail: Evaluate referral details against the policy JSON data.
+    Structured Guardrail: Evaluate referral action against policy JSON data.
     Returns: (is_restricted, policy_section_id, policy_section_description)
     """
-    req_action = referral.get("requested_action", "").lower()
+    req_action = referral.get("requested_action", "").strip()
     summary = referral.get("summary", "").lower()
 
-    # Check restricted sections
+    # Explicit allowed actions (Section 2)
+    permitted_actions = {
+        "Record change of address": "Section 2.2 / 2.5",
+        "Flag for contact attempt": "Section 2.6",
+        "Draft triage note for supervisor": "Section 2.4"
+    }
+    if req_action in permitted_actions:
+        return False, permitted_actions[req_action], "Permitted casework action"
+
     for sec in policy.get("restricted", {}).get("sections", []):
         # 1. Check exact match on restricted actions
         for act in sec.get("restricted_actions", []):
-            if act.lower() in req_action:
+            if act.lower() in req_action.lower():
                 return True, sec["id"], sec["description"]
 
-        # 2. Check keyword matches
+        # 2. Check keyword matches in requested action
         for kw in sec.get("keywords", []):
-            if kw.lower() in req_action or kw.lower() in summary:
+            if kw.lower() in req_action.lower():
                 return True, sec["id"], sec["description"]
 
-    return False, None, None
+    # Fallback to Section 6.1 if unclear
+    return True, "Section 6.1", "Action scope unclear; defaults to restricted under Section 6.1"
+
 
 
 def fetch_resident_history(resident_ref, trace):
@@ -119,55 +171,8 @@ def fetch_resident_history(resident_ref, trace):
     return None
 
 
-def call_llm(prompt):
-    """Attempt to generate text using Gemini/OpenAI API if keys are present."""
-    gemini_key = os.environ.get("GEMINI_API_KEY")
-    openai_key = os.environ.get("OPENAI_API_KEY")
-
-    if gemini_key:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
-        headers = {"Content-Type": "application/json"}
-        data = {
-            "contents": [{
-                "parts": [{
-                    "text": prompt
-                }]
-            }]
-        }
-        req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
-        try:
-            with urllib.request.urlopen(req, timeout=10) as response:
-                res_data = json.loads(response.read().decode("utf-8"))
-                return res_data["candidates"][0]["content"]["parts"][0]["text"]
-        except Exception as e:
-            print(f"  [LLM Error] Gemini API call failed: {e}. Falling back to templates.")
-
-    elif openai_key:
-        url = "https://api.openai.com/v1/chat/completions"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {openai_key}"
-        }
-        data = {
-            "model": "gpt-4o-mini",
-            "messages": [
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.2
-        }
-        req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
-        try:
-            with urllib.request.urlopen(req, timeout=10) as response:
-                res_data = json.loads(response.read().decode("utf-8"))
-                return res_data["choices"][0]["message"]["content"]
-        except Exception as e:
-            print(f"  [LLM Error] OpenAI API call failed: {e}. Falling back to templates.")
-
-    return None
-
-
 def draft_triage_note(referral, history, trace):
-    """Draft a triage note summarizing the situation."""
+    """Draft a triage note proposal (Section 2.4)."""
     ref_id = referral["referral_id"]
     res_ref = referral["resident_ref"]
     req_action = referral["requested_action"]
@@ -175,7 +180,6 @@ def draft_triage_note(referral, history, trace):
     urgency = referral["urgency"]
     source = referral["source"]
 
-    # History details
     status = history.get("status", "Unknown")
     benefit_code = history.get("benefit_code", "Unknown")
     district = history.get("district", "Unknown")
@@ -191,44 +195,7 @@ def draft_triage_note(referral, history, trace):
     for event in events:
         events_str += f"- [{event['date']}] {event['type']}: {event['detail']}\n"
 
-    prompt = f"""You are an automated casework assistant for Calder County.
-Draft a concise, professional triage note for caseworker review.
-A drafted note has no effect on the case until a caseworker adopts it.
-
-Referral Details:
-- Referral ID: {ref_id}
-- Resident Ref: {res_ref}
-- Source: {source}
-- Summary: {summary}
-- Requested Action: {req_action}
-- Urgency: {urgency}
-
-Resident History:
-- Current Status: {status}
-- Benefit Code: {benefit_code}
-- District: {district}
-- Monthly Award: ${award_monthly:.2f}
-
-Household Composition:
-{household_str}
-
-Recent Case Events:
-{events_str}
-
-Please generate a well-structured markdown note with:
-1. Executive summary of the referral.
-2. Resident history context.
-3. Recommended next steps.
-Keep it objective and professional. Do not invent any facts not in the history.
-"""
-    # Try calling LLM
-    note = call_llm(prompt)
-    if note:
-        trace.add_step("Draft Triage Note (LLM)", {"referral_id": ref_id, "summary": f"Drafted triage note using LLM for {ref_id}"})
-        return note
-
-    # Fallback to template
-    trace.add_step("Draft Triage Note (Template)", {"referral_id": ref_id, "summary": f"Drafted triage note using template for {ref_id}"})
+    trace.add_step("Draft Triage Note (Proposal)", {"referral_id": ref_id, "summary": f"Drafted triage note proposal for {ref_id}"})
     note = f"""# Triage Note: {ref_id}
 **Date:** {datetime.now().strftime('%Y-%m-%d')}
 **Resident Reference:** {res_ref}
@@ -254,13 +221,16 @@ Resident history shows an active benefit account in district '{district}' receiv
 ## Recommended Next Steps
 1. Review the requested action '{req_action}' in detail.
 2. Verify household and income details if necessary.
-3. Update case file upon confirmation.
+3. Update case file upon caseworker confirmation.
 """
     return note
 
 
-def draft_escalation_report(referral, history, section_id, section_desc, decision_status, decision_reason, trace):
-    """Draft an escalation report with sufficient context for a supervisor."""
+def draft_handoff_report(referral, history, minors, reason, trace):
+    """
+    Draft a caseworker hand-off report under Amendment ACA-2026/2 Section 3.2.
+    Preserves all gathered work so caseworker does not repeat steps.
+    """
     ref_id = referral["referral_id"]
     res_ref = referral["resident_ref"]
     req_action = referral["requested_action"]
@@ -268,7 +238,6 @@ def draft_escalation_report(referral, history, section_id, section_desc, decisio
     urgency = referral["urgency"]
     source = referral["source"]
 
-    # History details
     status = history.get("status", "Unknown") if history else "Unknown"
     benefit_code = history.get("benefit_code", "Unknown") if history else "Unknown"
     district = history.get("district", "Unknown") if history else "Unknown"
@@ -284,49 +253,72 @@ def draft_escalation_report(referral, history, section_id, section_desc, decisio
     for event in events:
         events_str += f"- [{event['date']}] {event['type']}: {event['detail']}\n"
 
-    prompt = f"""You are an automated casework assistant for Calder County.
-Generate a formal escalation report for a supervisor regarding a restricted action.
+    trace.add_step("Caseworker Hand-Off Created", {
+        "referral_id": ref_id,
+        "summary": f"Handed off referral {ref_id} to caseworker under Section 3.9 (Safeguarding)"
+    })
 
-Referral Details:
-- Referral ID: {ref_id}
-- Resident Ref: {res_ref}
-- Source: {source}
-- Summary: {summary}
-- Requested Action: {req_action}
-- Urgency: {urgency}
+    note = f"""# Caseworker Hand-Off: {ref_id}
+**Date:** {datetime.now().strftime('%Y-%m-%d')}
+**Resident Reference:** {res_ref}
+**Source of Referral:** {source}
+**Summary of Referral:** {summary}
+**Requested Action:** {req_action}
+**Urgency:** {urgency}
 
-Policy Violation Details:
-- Action Restrained: {req_action}
-- Policy Section: {section_id} - {section_desc}
-- Decision: Refused execution by automated assistant; escalated to supervisor for review.
+## Safeguarding Notification (Policy Amendment ACA-2026/2 §3.9)
+> [!NOTE]
+> **Safeguarding Determination:** This household includes a child under age 18 (or composition cannot be established).
+> **Mandate:** In accordance with Authority Policy Amendment ACA-2026/2 Section 3.9, drafting a triage note for a household that includes a person under 18 requires a caseworker's judgement from the outset.
+> **Nature of Hand-off (§3.3):** This hand-off is **ordinary casework that a person must do**, distinguishable from an escalation requiring a departmental supervisor decision.
+> **Preserved Context (§3.2 / §4.2):** All pre-established context and case history have been compiled below so that the caseworker does not need to repeat work.
 
-Supervisor Decision Status:
-- Status: {decision_status}
-- Reason: {decision_reason}
+## Resident Background
+- **Current Status:** {status}
+- **Benefit Code:** {benefit_code}
+- **District:** {district}
+- **Monthly Award:** ${award_monthly:.2f}
 
-Resident History:
-- Current Status: {status}
-- Benefit Code: {benefit_code}
-- District: {district}
-- Monthly Award: ${award_monthly:.2f}
-
-Household Composition:
-{household_str}
-
-Recent Case Events:
-{events_str}
-
-Please generate a well-structured markdown report that clearly presents:
-1. Escalation justification (referencing policy section {section_id}).
-2. The current status of the supervisor's decision.
-3. Summary of case context for the supervisor to act without re-reading the case history.
+## Household Composition (from Department Records)
+{household_str if household_str else "No household records available.\n"}
+## Case Events Timeline (Preserved)
+{events_str if events_str else "No case events available.\n"}
+## Action for Caseworker
+1. Review referral and history directly.
+2. Conduct human safeguarding appraisal and formulate triage decision.
 """
-    note = call_llm(prompt)
-    if note:
-        trace.add_step("Draft Escalation Report (LLM)", {"referral_id": ref_id, "summary": f"Drafted escalation report using LLM for {ref_id}"})
-        return note
+    return note
 
-    trace.add_step("Draft Escalation Report (Template)", {"referral_id": ref_id, "summary": f"Drafted escalation report using template for {ref_id}"})
+
+def draft_escalation_report(referral, history, section_id, section_desc, decision_status, decision_reason, trace):
+    """Draft a Section 4 escalation report with sufficient context for a supervisor."""
+    ref_id = referral["referral_id"]
+    res_ref = referral["resident_ref"]
+    req_action = referral["requested_action"]
+    summary = referral["summary"]
+    urgency = referral["urgency"]
+    source = referral["source"]
+
+    status = history.get("status", "Unknown") if history else "Unknown"
+    benefit_code = history.get("benefit_code", "Unknown") if history else "Unknown"
+    district = history.get("district", "Unknown") if history else "Unknown"
+    award_monthly = history.get("award_monthly", 0.0) if history else 0.0
+
+    household = history.get("household", []) if history else []
+    household_str = ""
+    for member in household:
+        household_str += f"- {member['name']} ({member['relationship']}, DOB: {member['date_of_birth']})\n"
+
+    events = history.get("events", []) if history else []
+    events_str = ""
+    for event in events:
+        events_str += f"- [{event['date']}] {event['type']}: {event['detail']}\n"
+
+    trace.add_step("Draft Escalation Report", {
+        "referral_id": ref_id,
+        "summary": f"Drafted Section 4 escalation report for {ref_id} ({section_id})"
+    })
+
     note = f"""# Escalation Report: {ref_id}
 **Date:** {datetime.now().strftime('%Y-%m-%d')}
 **Resident Reference:** {res_ref}
@@ -335,11 +327,12 @@ Please generate a well-structured markdown report that clearly presents:
 **Requested Action:** {req_action}
 **Urgency:** {urgency}
 
-## Policy Violation Details
+## Policy Violation Details (Section 4 Escalation)
 > [!IMPORTANT]
 > **Action Restrained:** {req_action}
 > **Policy Section:** {section_id} - {section_desc}
 > **Decision:** Refused execution by automated assistant; escalated to supervisor for review.
+> **Mandate (§3.3):** An escalation requires the Department to decide whether this action may happen at all.
 
 ## Supervisor Decision Status
 - **Status:** {decision_status}
@@ -351,7 +344,7 @@ Please generate a well-structured markdown report that clearly presents:
 - **District:** {district}
 - **Monthly Award:** ${award_monthly:.2f}
 
-## Case Events Context (Recent first)
+## Case Events Context (Preserved)
 {events_str if events_str else "No case events available.\n"}
 ## Supervisor Briefing
 The referral requested '{req_action}', which is restricted under section {section_id} of the Authority Policy. The automated assistant blocked this action to enforce compliance. The supervisor must review the resident's case history and decide on appropriate action.
@@ -368,6 +361,7 @@ def main():
 
     print("======================================================================")
     print("Calder County Automated Casework Assistant — Morning Agent Running...")
+    print(f"Policy Reference: ACA-2026/1 as amended by ACA-2026/2")
     print(f"Interactive Mode: {interactive}")
     print("======================================================================")
 
@@ -400,35 +394,54 @@ def main():
 
     # 4. Process each referral
     processed_count = 0
-    permitted_count = 0
-    escalated_count = 0
-    approved_count = 0
+    triage_count = 0
+    escalation_count = 0
+    handoff_count = 0
 
     for idx, ref in enumerate(referrals):
         ref_id = ref["referral_id"]
         res_ref = ref["resident_ref"]
         req_action = ref["requested_action"]
+        received_at = ref.get("received_at")
         print(f"\n--- Processing Referral [{idx+1}/{len(referrals)}]: {ref_id} ({res_ref}) ---")
         trace.add_step("Process Referral Start", {"referral_id": ref_id, "summary": f"Processing referral {ref_id} for resident {res_ref}"})
 
-        # Evaluate against Policy (Structured Guardrail)
+        # Fetch resident history first (permitted under Section 3.1 of ACA-2026/2)
+        history = fetch_resident_history(res_ref, trace)
+        if not history or "error" in history:
+            print(f"  [WARNING] Resident history not found or failed for {res_ref}")
+            history = {"resident": {}, "household": None, "events": []}
+
+        # Step A: Evaluate Section 3.9 Safeguarding (Child in household / unestablished composition)
+        household = history.get("household", [])
+        is_safeguarding, minors, safeguarding_reason = evaluate_safeguarding(household, received_at)
+
+        if is_safeguarding:
+            print(f"  [SAFEGUARDING] Section 3.9 Triggered: {safeguarding_reason}")
+            handoff_content = draft_handoff_report(ref, history, minors, safeguarding_reason, trace)
+            out_path = os.path.join(OUTPUT_DIR, f"handoff_{ref_id}.md")
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write(handoff_content)
+            txt_path = os.path.join(OUTPUT_DIR, f"handoff_{ref_id}.txt")
+            with open(txt_path, "w", encoding="utf-8") as f:
+                f.write(handoff_content)
+            print(f"  [HAND-OFF] Referral handed off to caseworker: output/handoff_{ref_id}.md")
+            handoff_count += 1
+            processed_count += 1
+            continue
+
+        # Step B: Evaluate requested action against Policy Section 3.1-3.8 / 6.1
         is_restricted, sec_id, sec_desc = evaluate_policy(ref, policy)
 
-        history = None
         if not is_restricted:
-            # Permitted to proceed: fetch history and draft triage note
-            history = fetch_resident_history(res_ref, trace)
-            if history and "error" not in history:
-                note_content = draft_triage_note(ref, history, trace)
-                out_path = os.path.join(OUTPUT_DIR, f"triage_{ref_id}.md")
-                with open(out_path, "w", encoding="utf-8") as f:
-                    f.write(note_content)
-                print(f"  [SUCCESS] Triage note drafted: output/triage_{ref_id}.md")
-                trace.add_step("Triage Complete", {"referral_id": ref_id, "summary": f"Saved triage note to output/triage_{ref_id}.md"})
-                permitted_count += 1
-            else:
-                print(f"  [ERROR] Resident history not found or failed for {res_ref}")
-                trace.add_step("Process Referral Fail", {"referral_id": ref_id, "summary": f"Resident history fetch failed for {res_ref}"})
+            # Fully permitted: draft triage note proposal (Section 2.4)
+            note_content = draft_triage_note(ref, history, trace)
+            out_path = os.path.join(OUTPUT_DIR, f"triage_{ref_id}.md")
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write(note_content)
+            print(f"  [SUCCESS] Triage note drafted: output/triage_{ref_id}.md")
+            trace.add_step("Triage Complete", {"referral_id": ref_id, "summary": f"Saved triage note to output/triage_{ref_id}.md"})
+            triage_count += 1
         else:
             # Restricted Action detected! Hard approval gate
             print(f"  [WARNING] Restricted Action Detected: '{req_action}' falls under Policy Section {sec_id}")
@@ -443,7 +456,7 @@ def main():
             decision_reason = "Escalated by Automated Casework Assistant"
 
             if interactive:
-                # Ask the supervisor for approval (Hard approval gate)
+                # Ask the supervisor for approval
                 print("\n=======================================================")
                 print("                  SUPERVISOR APPROVAL REQUIRED")
                 print("=======================================================")
@@ -455,7 +468,6 @@ def main():
                 print("-------------------------------------------------------")
                 sys.stdout.flush()
 
-                # Get human decision
                 choice = input("Approve this action to proceed? (y/N): ").strip().lower()
                 if choice == 'y':
                     approved = True
@@ -473,54 +485,49 @@ def main():
                         "summary": f"Supervisor denied/skipped action '{req_action}'"
                     })
             else:
-                # Non-interactive mode automatically declines and escalates
                 print("  [NON-INTERACTIVE] Autodeclining and escalating restricted action.")
                 trace.add_step("Auto-Refusal (Non-interactive)", {
                     "referral_id": ref_id,
                     "summary": f"Auto-declined restricted action '{req_action}' in non-interactive mode"
                 })
 
-            # Fetch resident history for escalation report context
-            history = fetch_resident_history(res_ref, trace)
-
             if approved:
-                # Draft note noting approval
                 note_content = draft_triage_note(ref, history, trace)
-                # Append approval stamp
                 note_content += f"\n\n---\n**SUPERVISOR DECISION:** Approved\n**Approver:** Supervisor via CLI\n**Approved At:** {datetime.now().isoformat()}\n"
                 out_path = os.path.join(OUTPUT_DIR, f"triage_{ref_id}.md")
                 with open(out_path, "w", encoding="utf-8") as f:
                     f.write(note_content)
-                approved_count += 1
-                permitted_count += 1
+                triage_count += 1
             else:
-                # Draft formal escalation report
                 escalation_content = draft_escalation_report(
                     ref, history, sec_id, sec_desc, decision_status, decision_reason, trace
                 )
                 out_path = os.path.join(OUTPUT_DIR, f"escalation_{ref_id}.md")
                 with open(out_path, "w", encoding="utf-8") as f:
                     f.write(escalation_content)
+                txt_path = os.path.join(OUTPUT_DIR, f"escalation_{ref_id}.txt")
+                with open(txt_path, "w", encoding="utf-8") as f:
+                    f.write(escalation_content)
                 print(f"  [ESCALATED] Escalation report drafted: output/escalation_{ref_id}.md")
                 trace.add_step("Escalation Complete", {"referral_id": ref_id, "summary": f"Saved escalation report to output/escalation_{ref_id}.md"})
-                escalated_count += 1
+                escalation_count += 1
 
         processed_count += 1
 
     # Save traces
     trace.add_step("Agent Finish", {
-        "summary": f"Morning sequence run completed. Processed: {processed_count}, Permitted/Approved: {permitted_count}, Escalated: {escalated_count}"
+        "summary": f"Morning sequence run completed. Processed: {processed_count}, Triage Proposals: {triage_count}, Escalated: {escalation_count}, Hand-offs: {handoff_count}"
     })
     trace.save_traces()
 
     print("\n=======================================================")
     print("                    RUN SUMMARY")
     print("=======================================================")
-    print(f"Total Referrals Processed: {processed_count}")
-    print(f"Permitted without Gate:    {permitted_count - approved_count}")
-    print(f"Restricted and Approved:   {approved_count}")
-    print(f"Restricted and Escalated:  {escalated_count}")
-    print(f"Trace logs written to:     output/execution_trace.json / .md")
+    print(f"Total Referrals Processed:  {processed_count}")
+    print(f"Draft Triage Proposals:     {triage_count}")
+    print(f"Supervisor Escalations (S4): {escalation_count}")
+    print(f"Caseworker Hand-offs (S3.9): {handoff_count}")
+    print(f"Trace logs written to:      output/execution_trace.json / .md")
     print("=======================================================")
 
 
